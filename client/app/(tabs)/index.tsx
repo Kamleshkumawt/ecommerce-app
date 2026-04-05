@@ -112,7 +112,7 @@ export default function Home() {
                 isSelected={cat.id === "all"}
                 onPress={() =>
                   router.push({
-                    pathname: "/shop ",
+                    pathname: "/shop",
                     params: {
                       category: cat.id === "all" ? "" : cat.name.toLowerCase(),
                     },

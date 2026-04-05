@@ -26,7 +26,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { addToCart, cartItems,itemCount } = useCart();
+  const { addToCart, cartItems, itemCount } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -34,13 +34,14 @@ export default function ProductDetails() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const fetchProduct = async () => {
-    setProduct(dummyProducts.find((p) => p._id === id) as any);
+    const found : any = dummyProducts.find((p) => p._id === id);
+    setProduct(found ?? null);
     setLoading(false);
   };
 
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [id]);
 
   if (loading) {
     return (
