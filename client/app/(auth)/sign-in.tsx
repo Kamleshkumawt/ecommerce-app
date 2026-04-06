@@ -6,79 +6,95 @@ import * as React from "react";
 import { Pressable, TextInput, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Define a custom type for MFA factors
-type MFAFactor = {
-  strategy: string;
-  emailAddressId?: string;
-};
-
 export default function Page() {
-  const { signIn, setSession, isLoaded, error } = useSignIn(); // isLoaded is used to check if Clerk has finished loading
-  const router = useRouter();
-
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [code, setCode] = React.useState("");
   const [showEmailCode, setShowEmailCode] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const { signIn, errors, fetchStatus } = useSignIn();
+  const router = useRouter();
 
-  const onSignInPress = async () => {
-    if (!isLoaded || !emailAddress || !password) return;
+  const [emailAddress, setEmailAddress] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [code, setCode] = React.useState('');
+
+  const handleSubmit = async () => {
+    if (loading || !emailAddress || !password) return;
 
     setLoading(true);
-
     try {
-      // Create sign-in attempt
-      const signInAttempt = await signIn.create({
-        identifier: emailAddress,
+      const result = await signIn.password({
+        emailAddress,
         password,
       });
 
-      if (signInAttempt.status === "complete") {
-        // If the sign-in is complete, set the session
-        await setSession(signInAttempt.createdSessionId);
-        router.replace("/");
-      } else if (signInAttempt.status === "needs_second_factor") {
-        // Handle second-factor authentication (MFA)
-        const emailCodeFactor: MFAFactor | undefined = signInAttempt.secondFactors?.find(
-          (factor) => factor.strategy === "email_code"
-        );
-
-        if (emailCodeFactor) {
-          // Send second-factor email code
-          await signIn.prepareSecondFactor({
-            strategy: "email_code",
-            emailAddressId: emailCodeFactor.emailAddressId,
-          });
-          setShowEmailCode(true); // Show email code verification UI
-        }
+      if (result.error) {
+        console.error("Error during sign-in:", result.error);
+        return;
       }
-    } catch (err) {
-      console.error(err);
+
+      console.log("Sign-in result:", result);
+
+      // Ensure the result contains the `status` property
+      if (result.status === "complete") {
+        await signIn.finalize({
+          navigate: ({ session, decorateUrl }) => {
+            if (session?.currentTask) {
+              console.log(session?.currentTask);
+              return;
+            }
+
+            const url = decorateUrl('/');
+            if (url.startsWith('http')) {
+              window.location.href = url;
+            } else {
+              router.push(url as "/");
+            }
+          },
+        });
+      } else if (result.status === "needs_second_factor") {
+        // MFA required
+        setShowEmailCode(true);
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const onVerifyPress = async () => {
-    if (!isLoaded || !code) return;
+  const handleVerify = async () => {
+    if (loading || !code) return;
 
     setLoading(true);
-
     try {
-      // Attempt to verify second-factor authentication
-      const attempt = await signIn.attemptSecondFactor({
-        strategy: "email_code",
+      const result = await signIn.mfa.verifyEmailCode({
         code,
       });
 
-      if (attempt.status === "complete") {
-        // Complete the session after verifying MFA
-        await setSession(attempt.createdSessionId);
-        router.replace("/");
+      if (result.error) {
+        console.error("MFA verification error:", result.error);
+        return;
       }
-    } catch (err) {
-      console.error(err);
+
+      // Ensure the result contains the `status` property
+      if (result.status === "complete") {
+        await signIn.finalize({
+          navigate: ({ session, decorateUrl }) => {
+            if (session?.currentTask) {
+              console.log(session?.currentTask);
+              return;
+            }
+
+            const url = decorateUrl('/');
+            if (url.startsWith('http')) {
+              window.location.href = url;
+            } else {
+              router.push(url as "/");
+            }
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error during MFA verification:", error);
     } finally {
       setLoading(false);
     }
@@ -124,7 +140,7 @@ export default function Page() {
 
           <Pressable
             className={`w-full py-4 rounded-full items-center mb-10 ${loading || !emailAddress || !password ? "bg-gray-300" : "bg-primary"}`}
-            onPress={onSignInPress}
+            onPress={handleSubmit}
             disabled={loading || !emailAddress || !password}
           >
             {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-bold text-lg">Sign In</Text>}
@@ -157,7 +173,7 @@ export default function Page() {
 
           <Pressable
             className="w-full bg-primary py-4 rounded-full items-center"
-            onPress={onVerifyPress}
+            onPress={handleVerify}
             disabled={loading}
           >
             {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-bold text-lg">Verify</Text>}

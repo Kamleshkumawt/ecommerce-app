@@ -4,12 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Link } from 'expo-router';
-import { useSignUp, useAuth } from '@clerk/expo';
+import { useSignUp } from '@clerk/expo';
 import { COLORS } from '@/constants';
 
 export default function SignUpScreen() {
     const { signUp, errors, fetchStatus } = useSignUp();
-    const { isSignedIn } = useAuth();
     const router = useRouter();
 
     const [emailAddress, setEmailAddress] = useState('');
