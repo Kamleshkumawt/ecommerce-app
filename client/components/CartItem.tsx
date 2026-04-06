@@ -14,7 +14,7 @@ export default function CartItem({item,onRemove, onUpdateQuantity}: CartItemProp
         </View>
         <View className='flex-1 justify-between'>
             {/*Product Details */}
-            <view className='flex-row justify-between items-start'>
+            <View className='flex-row justify-between items-start'>
                 <View>
                     <Text className='text-primary font-medium text-sm mb-1'>{item.product.name}</Text>
                     <Text className='text-secondary text-xs'>Size: {item.size}</Text>
@@ -22,7 +22,7 @@ export default function CartItem({item,onRemove, onUpdateQuantity}: CartItemProp
                 <TouchableOpacity onPress={onRemove}>
                     <Ionicons name='close-circle-outline' size={20} color='#FF4C3B'/>
                 </TouchableOpacity>
-            </view>
+            </View>
 
             {/*Price and Quantity */}
             <View className='flex-row justify-between items-center mt-2'>

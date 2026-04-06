@@ -40,7 +40,7 @@ export default function Profile() {
           <>
           {/**Profile Info */}
           <View className='items-center mb-8'>
-            <View className='relative'>
+            <View className='relative items-center'>
             <View className='mb-3'>
               <Image source={{uri: user.imageUrl}} className='size-20 border-2 border-white shadow-sm rounded-full' />
             </View>
