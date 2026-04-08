@@ -46,7 +46,7 @@ export default function Profile() {
             <View className='mb-3'>
               <Image source={{uri: user.imageUrl}} className='size-20 border-2 border-white shadow-sm rounded-full' />
             </View>
-            <Text className='text-xl font-bold text-primary'>{user.firstName + ' ' + user.lastName}</Text>
+            <Text className='text-xl font-bold text-primary'>{user.username}</Text>
             <Text className='text-secondary text-sm'>{user.emailAddresses[0].emailAddress}</Text>
 
             {/* Admin Panel Button if user is admin */}
