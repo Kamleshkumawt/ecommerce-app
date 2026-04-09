@@ -3,8 +3,10 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import cors from "cors";
+import { clerkMiddleware } from "@clerk/express";
 
 const app = express();
+
 
 app.use(
   cors({
@@ -23,6 +25,8 @@ app.use(helmet({
     },
   },
 }));
+
+app.use(clerkMiddleware());
 
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
