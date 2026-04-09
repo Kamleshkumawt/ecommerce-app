@@ -1,17 +1,30 @@
-import { dummyWishlist } from "@/assets/assets";
+import api from "@/constants/api";
 import { Product, WishlistContextType } from "@/constants/types";
+import { useAuth } from "@clerk/expo";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
+    const { getToken } = useAuth();
     const [wishlist, setWishlist] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
 
     const fetchWishlist = async () => {
-        setLoading(true);
-        setWishlist(dummyWishlist);
-        setLoading(false);
+        try {
+            setLoading(true);
+            const token = await getToken();
+            const { data } = await api.get("/wishlist", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            setWishlist(data.data);
+        } catch (err) {
+            console.error("Failed to fetch wishlist:", err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const toggleWishlist = async (product:Product) => {
