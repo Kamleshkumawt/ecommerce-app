@@ -4,6 +4,8 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
+import { clerkWebhook } from "./controllers/webhooks.js";
+import productRouter from "./routes/productRoutes.js";
 
 const app = express();
 
@@ -47,6 +49,10 @@ if (process.env.NODE_ENV === "development") {
 } else {
   app.use(morgan("combined"));
 }
+
+app.post("/api/clerk", express.raw({ type: "application/json" }),  clerkWebhook);
+
+app.use("/api/products", productRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

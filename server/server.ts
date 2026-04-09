@@ -2,10 +2,13 @@ import http from "http";
 import "dotenv/config.js";
 import app from "./app.js";
 import connectDB from "./config/db.js";
+import makeAdmin from "./scripts/makeAdmin.js";
 
 const port = process.env.PORT || 8000;
 
 const server = http.createServer(app);
+
+makeAdmin();
 
 const startServer = async () => {
   try {
