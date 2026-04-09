@@ -6,6 +6,7 @@ import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
 import { clerkWebhook } from "./controllers/webhooks.js";
 import productRouter from "./routes/productRoutes.js";
+import cartRouter from "./routes/cartRoutes.js";
 
 const app = express();
 
@@ -53,6 +54,7 @@ if (process.env.NODE_ENV === "development") {
 app.post("/api/clerk", express.raw({ type: "application/json" }),  clerkWebhook);
 
 app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
