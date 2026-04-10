@@ -3,12 +3,15 @@ import "dotenv/config.js";
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import makeAdmin from "./scripts/makeAdmin.js";
+import { seedProducts } from "./scripts/seedProducts.js";
 
 const port = process.env.PORT || 8000;
 
 const server = http.createServer(app);
 
-makeAdmin();
+await makeAdmin();
+
+// await seedProducts(process.env.MONGO_URI as string);
 
 const startServer = async () => {
   try {

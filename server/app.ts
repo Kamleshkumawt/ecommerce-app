@@ -10,6 +10,7 @@ import cartRouter from "./routes/cartRoutes.js";
 import orderRouter from "./routes/ordersRoutes.js";
 import addressRouter from "./routes/addressRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
+import wishlistRouter from "./routes/wishlistRoutes.js";
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/addresses", addressRouter);
+app.use("/api/wishlist", wishlistRouter);
 app.use("/api/admin", adminRouter);
 
 app.get("/", (req: Request, res: Response) => {

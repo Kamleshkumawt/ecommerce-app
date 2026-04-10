@@ -143,7 +143,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
 
         if(status) query.orderStatus = status;
         const total = await Order.countDocuments(query);
-        const orders = await Order.find(query).populate("user", "name email").populate("items.product", "name").skip((Number(page)-1)*Number(limit)));
+        const orders = await Order.find(query).populate("user", "name email").populate("items.product", "name").skip((Number(page)-1)*Number(limit));
         
         res.status(200).json({ success: true, data: orders, pagination: {total, page: Number(page), pages: Math.ceil(orders.length/Number(limit))} });
     } catch (err: any) {

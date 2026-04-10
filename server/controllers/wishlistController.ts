@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import Product from "../models/Products.js";
 import Wishlist from "../models/Wishlist.js";
 
 /**
